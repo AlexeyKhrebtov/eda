@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  php-fpm:
+    build:
+      context: docker/php-fpm
+    volumes:
+    - ./:/var/www
+    - ./docker/php-fpm/.docker_bash_history:/root/.bash_history
+    - ${HOME}/.gitconfig:/etc/gitconfig:ro
+    environment:
+      XDEBUG_CONFIG: "remote_host=192.168.220.1 remote_enable=1"
+      PHP_IDE_CONFIG: "serverName=Eda.Docker"
+    networks:
+      - internal
+
+  nginx:
+    build:
+      context: docker/nginx
+    volumes:
+      - ./:/var/www
+    ports:
+      - "80:80"
+    depends_on:
+      - php-fpm
+    networks:
+      - internal
+
+  db:
+    image: mariadb
+    networks:
+      - internal
+    volumes:
+      - ./docker/db:/var/lib/mysql
+    ports:
+    - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=database
+      # MARIADB_USER: "${MARIADB_USER}"
+
+  node:
+    build:
+      context: docker/node
+    volumes:
+      - ./:/var/www
+      - ./docker/node/.docker_bash_history:/root/.bash_history
+    stdin_open: true
+    tty: true
+    depends_on:
+      - "php-fpm"
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.220.0/28" # для фиксированного IP
