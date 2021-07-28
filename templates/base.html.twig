@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}
             {# 'app' must match the first argument to addEntry() in webpack.config.js #}
@@ -20,7 +21,7 @@
                 See note below about the "defer" attribute -->
         {% endblock %}
     </head>
-    <body class="bg-gray-100">
+    <body class="=bg-gray-100">
         <div id="app"></div>
         {% block body %}{% endblock %}
     </body>
